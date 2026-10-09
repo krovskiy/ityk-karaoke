@@ -1,5 +1,22 @@
 # ITYK Karaoke
 
+## Code checks
+
+GitHub Actions runs on pushes, pull requests, manual runs, and every Monday.
+It checks lint issues, TypeScript, the production build, and production dependencies.
+High or critical dependency vulnerabilities fail the audit.
+
+Run the same checks locally:
+
+```sh
+npm run check
+npm run audit
+```
+
+The build does not need .env, a host password, or an Apple API connection.
+After pushing the workflow, select "Lint and build" and "Dependency audit" as required
+checks in the main branch rules if you want GitHub to block merges when they fail.
+
 A small Node.js + Vite + SQLite app. Plain HTML, no CSS or frontend framework.
 Requires Node.js 24 or newer.
 

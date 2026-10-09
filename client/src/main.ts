@@ -173,7 +173,7 @@ async function searchSongs(query: string, version: number) {
       row.append(' ', button);
       suggestions.append(row);
     }
-  } catch (error) {
+  } catch {
     if (version === searchVersion) {
       element('search-message').textContent = 'Search unavailable. Type a song manually.';
     }

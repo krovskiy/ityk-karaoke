@@ -1,0 +1,41 @@
+{
+  "name": "karaoke-dashboard",
+  "version": "1.0.0",
+  "description": "Karaoke dashboard with Node.js, Vite, and SQLite",
+  "homepage": "https://github.com/krovskiy/ityk-karaoke#readme",
+  "bugs": {
+    "url": "https://github.com/krovskiy/ityk-karaoke/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krovskiy/ityk-karaoke.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "tsx watch --env-file-if-exists=.env server/index.ts",
+    "dev:client": "vite --config config/vite.config.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build --config config/vite.config.ts && tsc -p config/tsconfig.server.json",
+    "start": "node --env-file-if-exists=.env dist/server/index.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/qrcode": "^1.5.6",
+    "concurrently": "^10.0.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}

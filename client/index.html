@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITYK Karaoke</title>
+</head>
+<body>
+  <h1>ITYK Karaoke</h1>
+  <p id="message" role="status"></p>
+  <h2>Now singing</h2>
+  <p id="current"></p>
+  <div id="current-song"></div>
+  <div id="audience" hidden>
+    <button id="vote">Vote for this singer</button>
+    <h2>Join the queue</h2>
+    <form id="join">
+      <p><label>Your name (or duet names) <input name="singer" required maxlength="200"></label></p>
+      <p><label>Find a song <input id="song-search" name="song" required maxlength="200" autocomplete="off"></label></p>
+      <p id="search-message" role="status"></p>
+      <ul id="song-suggestions"></ul>
+      <div id="selected-song"></div>
+      <button>Join</button>
+    </form>
+  </div>
+  <div id="projector" hidden>
+    <h2>Scan to join and vote</h2>
+    <canvas id="qr"></canvas>
+    <p><a id="join-link"></a></p>
+  </div>
+  <h2>Up next</h2>
+  <ol id="queue"></ol>
+  <section id="results-section" hidden>
+    <h2>Results</h2>
+    <p id="result-message">Results will be revealed at the end.</p>
+    <ol id="results"></ol>
+  </section>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

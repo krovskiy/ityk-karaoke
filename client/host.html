@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Karaoke Host</title>
+</head>
+<body>
+  <h1>Karaoke Host</h1>
+  <p><a href="./">Audience page</a> | <a href="./?view=projector">Projector</a></p>
+  <form id="login">
+    <label>Host password <input id="password" type="password" required></label>
+    <button>Log in</button>
+  </form>
+  <p id="message" role="status"></p>
+  <main id="controls" hidden>
+    <p>Event: <strong id="phase"></strong></p>
+    <button id="logout">Log out</button>
+    <p>
+      <button id="next">Finish current / start next</button>
+      <button id="close">Close voting and queue</button>
+      <button id="reopen">Reopen and hide results</button>
+      <button id="reveal">Reveal results</button>
+    </p>
+    <h2>Performances</h2>
+    <p>Live vote counts below are visible only to the host.</p>
+    <ul id="performances"></ul>
+    <h2>Edit a performance</h2>
+    <form id="edit" hidden>
+      <p><label>Singer <input id="singer" required maxlength="200"></label></p>
+      <p><label>Song <input id="song" required maxlength="200"></label></p>
+      <button>Save</button>
+      <button id="cancel" type="button">Cancel</button>
+    </form>
+    <h2>New event</h2>
+    <p>Reset permanently deletes every performance and vote.</p>
+    <button id="reset">Reset event</button>
+  </main>
+  <script type="module" src="/src/host.ts"></script>
+</body>
+</html>

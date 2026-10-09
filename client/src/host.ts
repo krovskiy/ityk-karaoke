@@ -26,14 +26,17 @@ async function request(path: string, data?: object) {
     method = 'POST';
   }
 
-  const response = await fetch(`api/admin/${path}`, {
+  const options: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${password}`,
     },
-    body: JSON.stringify(data),
-  });
+  };
+  if (data !== undefined) {
+    options.body = JSON.stringify(data);
+  }
+  const response = await fetch(`api/admin/${path}`, options);
   const result = await response.json();
   if (response.status === 401) {
     logout();

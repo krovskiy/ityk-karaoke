@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   getHostEvent, nextSinger, changePerformance,
-  closeEvent, reopenEvent, revealResults, resetEvent,
+  closeEvent, reopenEvent, revealResults, resetEvent, awardCertificate,
 } from '../logic/event.js';
 
 const password = process.env.ADMIN_PASSWORD;
@@ -45,6 +45,11 @@ adminRoutes.post('/reopen', (_req, res) => {
 
 adminRoutes.post('/reveal', (_req, res) => {
   revealResults();
+  res.json({ ok: true });
+});
+
+adminRoutes.post('/certificate', (req, res) => {
+  awardCertificate(req.body?.category, req.body?.performance_id);
   res.json({ ok: true });
 });
 

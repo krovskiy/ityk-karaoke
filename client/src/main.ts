@@ -1,5 +1,9 @@
 import QRCode from 'qrcode';
+import './animated-gradient';
 import { showSong, type SongDetails } from './music';
+import { renderProjector } from './projector';
+import { toast } from './toast';
+import type { Certificate } from './finale';
 
 type Performance = SongDetails & {
   id: number;
@@ -12,6 +16,7 @@ type EventData = {
   phase: string;
   performances: Performance[];
   results: Result[] | null;
+  certificates?: Certificate[] | null;
 };
 
 function element(id: string) {
@@ -26,10 +31,23 @@ let selectedSong: SongDetails | null = null;
 let searchTimer: ReturnType<typeof setTimeout>;
 let searchVersion = 0;
 let currentId: number | undefined;
+let currentSongSnapshot = '';
+let singerNamesSnapshot = '';
+let joining = false;
+let voting = false;
+let eventPhase = '';
+const votedPerformances = new Set<number>();
+
+function updateVoteButton() {
+  voteButton.disabled = voting || currentId === undefined || eventPhase !== 'open' || votedPerformances.has(currentId);
+  voteButton.textContent = currentId !== undefined && votedPerformances.has(currentId) ? 'Vote counted' : 'Vote for this singer';
+}
 
 if (view === 'projector') {
+  document.body.classList.add('projector-view');
   element('projector').hidden = false;
 } else {
+  document.body.classList.add('audience-view');
   element('audience').hidden = false;
 }
 
@@ -50,41 +68,55 @@ async function refresh() {
     throw new Error('Cannot load the event.');
   }
   const event: EventData = await response.json();
+  renderEvent(event);
+}
 
+function renderEvent(event: EventData) {
+  eventPhase = event.phase;
+  if (!event.performances.length) votedPerformances.clear();
+  const names = [...new Set(event.performances.flatMap(person => person.singer.split(' & ').map(name => name.trim())).filter(Boolean))]
+    .sort((first, second) => first.localeCompare(second));
+  const namesSnapshot = JSON.stringify(names);
+  if (namesSnapshot !== singerNamesSnapshot) {
+    singerNamesSnapshot = namesSnapshot;
+    const suggestions = element('singer-names');
+    suggestions.replaceChildren(...names.map(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      return option;
+    }));
+  }
   currentId = undefined;
   element('current').textContent = 'Nobody is singing yet.';
-  element('current-song').replaceChildren();
-  const queue = [];
+  const current = event.performances.find(person => person.status === 'singing');
+  const snapshot = JSON.stringify(current);
+  if (snapshot !== currentSongSnapshot) {
+    currentSongSnapshot = snapshot;
+    element('current-song').replaceChildren();
+    if (current) showSong(element('current-song'), current);
+  }
   for (const person of event.performances) {
     if (person.status === 'singing') {
       currentId = person.id;
       element('current').textContent = person.singer + ': ' + person.song;
-      showSong(element('current-song'), person);
-    }
-    if (person.status === 'waiting') {
-      queue.push(person.singer + ': ' + person.song);
     }
   }
-  showList('queue', queue);
-  voteButton.disabled = currentId === undefined || event.phase !== 'open';
+  updateVoteButton();
   joinForm.hidden = event.phase !== 'open';
 
   element('results-section').hidden = event.results === null;
   element('result-message').textContent = 'Results will be revealed at the end.';
   const results = [];
-  const prizes = [150, 100, 50];
   if (event.results !== null) {
     element('result-message').textContent = 'Final results';
     for (let index = 0; index < event.results.length; index++) {
       const person = event.results[index];
-      let line = person.singer + ': ' + person.song + ' - ' + person.votes + ' votes';
-      if (index < 3) {
-        line += ' - ' + prizes[index] + ' minion points';
-      }
+      const line = person.singer + ': ' + person.song + ' - ' + person.votes + ' votes';
       results.push(line);
     }
   }
   showList('results', results);
+  renderProjector(event);
 }
 
 function showError(error: unknown) {
@@ -92,7 +124,7 @@ function showError(error: unknown) {
   if (error instanceof Error) {
     message = error.message;
   }
-  element('message').textContent = message;
+  toast(message, 'error');
 }
 
 async function send(path: string, data: object) {
@@ -106,8 +138,8 @@ async function send(path: string, data: object) {
     if (!response.ok) {
       throw new Error(result.error);
     }
-    element('message').textContent = 'Done.';
-    await refresh();
+    toast(path === 'vote' ? 'Vote counted! Thanks for cheering them on.' : 'You’re in the queue! Watch Up next for your turn.');
+    await refresh().catch(showError);
     return true;
   } catch (error) {
     showError(error);
@@ -117,9 +149,25 @@ async function send(path: string, data: object) {
 
 joinForm.onsubmit = async (event) => {
   event.preventDefault();
+  if (joining) return;
   const data = new FormData(joinForm);
+  const singer = String(data.get('singer') ?? '').trim();
+  const partner = String(data.get('duet_partner') ?? '').trim();
+  const names = partner ? singer + ' & ' + partner : singer;
+  if (!singer) {
+    toast('Enter your name to join the queue.', 'error');
+    (joinForm.elements.namedItem('singer') as HTMLInputElement).focus();
+    return;
+  }
+  if (names.length > 200) {
+    toast('Keep your name and duet partner’s name within 200 characters combined.', 'error');
+    return;
+  }
+  joining = true;
+  const submit = element('join-submit') as HTMLButtonElement;
+  submit.disabled = true;
   const saved = await send('queue', {
-    singer: data.get('singer'),
+    singer: names,
     song: data.get('song'),
     artists: selectedSong?.artists,
     album: selectedSong?.album,
@@ -130,6 +178,8 @@ joinForm.onsubmit = async (event) => {
     joinForm.reset();
     clearSearch();
   }
+  joining = false;
+  submit.disabled = false;
 };
 
 function clearSearch() {
@@ -160,17 +210,21 @@ async function searchSongs(query: string, version: number) {
     }
     for (const song of songs as SongDetails[]) {
       const row = document.createElement('li');
-      showSong(row, song);
+      const details = document.createElement('div');
+      details.className = 'suggestion-song';
+      showSong(details, song);
       const button = document.createElement('button');
       button.type = 'button';
-      button.textContent = 'Choose ' + song.song;
+      button.textContent = 'Choose';
+      button.setAttribute('aria-label', 'Choose ' + song.song + ' by ' + song.artists);
       button.onclick = () => {
         clearSearch();
         selectedSong = song;
         songInput.value = song.song;
         showSong(element('selected-song'), song);
+        toast('Selected: ' + song.song);
       };
-      row.append(' ', button);
+      row.append(details, button);
       suggestions.append(row);
     }
   } catch {
@@ -193,8 +247,13 @@ songInput.oninput = () => {
 };
 
 voteButton.onclick = async () => {
-  voteButton.disabled = true;
-  await send('vote', { id: currentId });
+  if (voting || currentId === undefined || votedPerformances.has(currentId)) return;
+  const performanceId = currentId;
+  voting = true;
+  updateVoteButton();
+  if (await send('vote', { id: performanceId })) votedPerformances.add(performanceId);
+  voting = false;
+  updateVoteButton();
 };
 
 if (view === 'projector') {
@@ -206,8 +265,12 @@ if (view === 'projector') {
   link.href = url.href;
   link.textContent = url.href;
 
-  QRCode.toCanvas(element('qr'), url.href).catch(() => {
-    element('message').textContent = 'Could not create the QR code.';
+  QRCode.toCanvas(element('qr'), url.href, { width: 144, margin: 2 }).then(() => {
+    // Let the stylesheet control the displayed size at each breakpoint.
+    element('qr').style.removeProperty('width');
+    element('qr').style.removeProperty('height');
+  }).catch(() => {
+    toast('Could not create the QR code.', 'error');
   });
 }
 
@@ -215,4 +278,11 @@ function update() {
   refresh().catch(showError);
 }
 update();
-setInterval(update, 3000);
+let streamConnected = false;
+const stream = new EventSource('api/event/stream');
+stream.onopen = () => { streamConnected = true; };
+stream.onerror = () => { streamConnected = false; };
+stream.onmessage = message => {
+  try { renderEvent(JSON.parse(message.data)); } catch (error) { showError(error); }
+};
+setInterval(() => { if (!streamConnected) update(); }, 3000);

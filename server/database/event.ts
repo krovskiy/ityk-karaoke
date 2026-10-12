@@ -89,6 +89,7 @@ export function swapPositions(firstId: number, secondId: number) {
 }
 
 export function deletePerformance(id: number) {
+  db.prepare('DELETE FROM certificates WHERE performance_id = ?').run(id);
   db.prepare('DELETE FROM votes WHERE performance_id = ?').run(id);
   db.prepare('DELETE FROM performances WHERE id = ?').run(id);
 }
@@ -99,5 +100,18 @@ export function addVote(id: number, voter: string) {
 }
 
 export function resetEvent() {
-  db.exec("DELETE FROM votes; DELETE FROM performances; UPDATE settings SET phase = 'open'");
+  db.exec("DELETE FROM certificates; DELETE FROM votes; DELETE FROM performances; UPDATE settings SET phase = 'open'");
+}
+
+export function getCertificates() {
+  return db.prepare(`SELECT c.category, p.id, p.singer, p.song FROM certificates c
+    JOIN performances p ON p.id = c.performance_id WHERE p.status = 'done'`).all();
+}
+
+export function setCertificate(category: string, performanceId: number | null) {
+  if (performanceId === null) {
+    db.prepare('DELETE FROM certificates WHERE category = ?').run(category);
+  } else {
+    db.prepare('INSERT INTO certificates (category, performance_id) VALUES (?, ?) ON CONFLICT(category) DO UPDATE SET performance_id = excluded.performance_id').run(category, performanceId);
+  }
 }

@@ -19,6 +19,7 @@ export function getPublicEvent() {
     phase: database.getPhase(),
     performances: database.getPerformances(),
     results,
+    certificates: results === null ? null : database.getCertificates(),
   };
 }
 
@@ -27,6 +28,7 @@ export function getHostEvent() {
     phase: database.getPhase(),
     performances: database.getHostPerformances(),
     results: database.getResults(),
+    certificates: database.getCertificates(),
   };
 }
 
@@ -132,4 +134,15 @@ export function resetEvent(confirmation: unknown) {
     throw new EventError('Type RESET to clear the event.');
   }
   database.resetEvent();
+}
+
+export function awardCertificate(category: unknown, performanceId: unknown) {
+  const categories = ['costume', 'presence', 'duet', 'unexpected'];
+  if (typeof category !== 'string' || !categories.includes(category)) {
+    throw new EventError('Choose a valid certificate category.');
+  }
+  if (performanceId !== null && (typeof performanceId !== 'number' || !Number.isInteger(performanceId) || database.getPerformance(performanceId)?.status !== 'done')) {
+    throw new EventError('Choose a finished performance for this certificate.');
+  }
+  database.setCertificate(category, performanceId as number | null);
 }

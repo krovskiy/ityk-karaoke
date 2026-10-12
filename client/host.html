@@ -4,38 +4,90 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Karaoke Host</title>
+  <link rel="stylesheet" href="/assets/style.css">
 </head>
-<body>
-  <h1>Karaoke Host</h1>
-  <p><a href="./">Audience page</a> | <a href="./?view=projector">Projector</a></p>
-  <form id="login">
-    <label>Host password <input id="password" type="password" required></label>
-    <button>Log in</button>
+<body class="host-view">
+  <div class="page">
+  <header class="page-header">
+    <h1>Karaoke / host desk</h1>
+    <nav class="actions" aria-label="Event pages"><a href="./" target="_blank" rel="noopener">Open audience page</a><a href="./?view=projector" target="_blank" rel="noopener">Open projector</a></nav>
+  </header>
+  <form id="login" class="form-layout login-form">
+    <h2>Run the karaoke night</h2>
+    <p>Log in to start singers, manage the lineup, and reveal results.</p>
+    <label class="field">Host password <input id="password" type="password" autocomplete="current-password" required></label>
+    <button>Open host desk</button>
   </form>
   <p id="message" role="status"></p>
-  <main id="controls" hidden>
-    <p>Event: <strong id="phase"></strong></p>
+  <main id="controls" class="host-layout" hidden>
+    <section class="section event-section" aria-label="Event controls">
+    <div class="section-header">
+    <div><p class="host-eyebrow">EVENT STATUS</p><strong id="phase"></strong></div>
     <button id="logout">Log out</button>
-    <p>
-      <button id="next">Finish current / start next</button>
-      <button id="close">Close voting and queue</button>
-      <button id="reopen">Reopen and hide results</button>
-      <button id="reveal">Reveal results</button>
-    </p>
-    <h2>Performances</h2>
-    <p>Live vote counts below are visible only to the host.</p>
+    </div>
+    <p id="host-instruction" class="host-instruction"></p>
+    <p id="host-connection" class="host-hint" role="status">Connecting to the event…</p>
+    </section>
+    <section class="section host-stage" aria-labelledby="host-stage-heading">
+      <h2 id="host-stage-heading">On stage</h2>
+      <div id="host-current"></div>
+      <p id="host-next-preview"></p>
+      <button id="next">Start the first singer</button>
+      <p id="next-help" class="host-hint"></p>
+    </section>
+    <section class="section host-event-actions" aria-labelledby="event-actions-heading">
+      <h2 id="event-actions-heading">Event controls</h2>
+      <div class="host-action-block">
+        <button id="close">End voting</button>
+        <p class="host-hint">Stops singing, signups, and votes.</p>
+      </div>
+      <div class="host-action-block">
+        <button id="reveal">Show awards</button>
+        <p class="host-hint">Opens the projector envelopes and publishes results.</p>
+      </div>
+      <div class="host-action-block">
+        <button id="reopen">Reopen event</button>
+        <p class="host-hint">Hides results and resumes signups.</p>
+      </div>
+    </section>
+    <section class="section performances-section" aria-labelledby="performances-heading">
+    <div class="section-header"><h2 id="performances-heading">Lineup & performances</h2><p id="host-counts"></p></div>
+    <div class="actions host-filters" role="group" aria-label="Filter performances">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="waiting" aria-pressed="false">Waiting</button>
+      <button type="button" data-filter="finished" aria-pressed="false">Finished</button>
+      <button type="button" data-filter="skipped" aria-pressed="false">Skipped</button>
+    </div>
+    <p id="host-empty" hidden></p>
     <ul id="performances"></ul>
-    <h2>Edit a performance</h2>
-    <form id="edit" hidden>
-      <p><label>Singer <input id="singer" required maxlength="200"></label></p>
-      <p><label>Song <input id="song" required maxlength="200"></label></p>
-      <button>Save</button>
+    </section>
+    <dialog id="edit-dialog" aria-labelledby="edit-heading">
+    <h2 id="edit-heading">Edit a performance</h2>
+    <p>Changing the song clears its old album artwork and music link.</p>
+    <form id="edit" class="form-layout">
+      <label class="field">Singer <input id="singer" required maxlength="200"></label>
+      <label class="field">Song <input id="song" required maxlength="200"></label>
+      <div class="actions">
+      <button>Save changes</button>
       <button id="cancel" type="button">Cancel</button>
+      </div>
     </form>
-    <h2>New event</h2>
-    <p>Reset permanently deletes every performance and vote.</p>
-    <button id="reset">Reset event</button>
+    </dialog>
+    <section class="section host-certificates" aria-labelledby="certificates-heading">
+      <h2 id="certificates-heading">Certificates</h2>
+      <p class="host-hint">Choose finished performers. Changes save automatically.</p>
+      <div id="certificate-controls" class="certificate-controls"></div>
+      <details><summary>How awards work</summary><p>The top three are ranked by votes. You choose the four certificate winners. After ending voting, click “Show awards,” then open the envelopes on the projector.</p></details>
+    </section>
+    <section class="section reset-section" aria-labelledby="reset-heading">
+    <h2 id="reset-heading">Start a new night</h2>
+    <details><summary>Clear this event permanently</summary>
+    <p>This deletes every performance and vote. Only do this when you are ready for a completely new event.</p>
+    <button id="reset">Delete all performances and votes</button>
+    </details>
+    </section>
   </main>
+  </div>
   <script type="module" src="/src/host.ts"></script>
 </body>
 </html>

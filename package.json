@@ -24,6 +24,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings client/src server config",
     "check": "npm run lint && npm run build",
+    "test": "npm run build && node tests/event-flow.mjs",
     "audit": "npm audit --omit=dev --audit-level=high",
     "build": "npm run typecheck && vite build --config config/vite.config.ts && tsc -p config/tsconfig.server.json",
     "start": "node --env-file-if-exists=.env dist/server/index.js"

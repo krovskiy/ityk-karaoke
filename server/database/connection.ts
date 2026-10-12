@@ -21,6 +21,10 @@ db.exec(`
   );
   CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY, phase TEXT);
   INSERT OR IGNORE INTO settings VALUES (1, 'open');
+  CREATE TABLE IF NOT EXISTS certificates (
+    category TEXT PRIMARY KEY,
+    performance_id INTEGER NOT NULL
+  );
 `);
 
 // add missing columns without deleting the existing queue

@@ -14,6 +14,7 @@ export function showSong(container: HTMLElement, song: SongDetails) {
     image.width = 100;
     image.height = 100;
     image.loading = 'lazy';
+    image.onerror = () => { image.remove(); };
     container.append(image);
   }
   const details = document.createElement('p');

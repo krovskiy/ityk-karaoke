@@ -4,6 +4,25 @@ import { getPublicEvent, joinQueue, vote } from '../logic/event.js';
 
 export const eventRoutes = Router();
 
+eventRoutes.get('/event/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  let previous = '';
+  const push = () => {
+    const snapshot = JSON.stringify(getPublicEvent());
+    if (snapshot !== previous) {
+      previous = snapshot;
+      res.write(`data: ${snapshot}\n\n`);
+    }
+  };
+  push();
+  const changes = setInterval(push, 500);
+  const heartbeat = setInterval(() => res.write(': keepalive\n\n'), 15000);
+  req.on('close', () => { clearInterval(changes); clearInterval(heartbeat); });
+});
+
 eventRoutes.get('/event', (_req, res) => {
   res.json(getPublicEvent());
 });

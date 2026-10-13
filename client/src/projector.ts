@@ -55,9 +55,6 @@ export function renderProjector(event: StageEvent) {
   resultsVisible = event.results !== null;
 
   const waiting = event.performances.filter(person => person.status === 'waiting');
-  element('queue-caption').textContent = waiting.length
-    ? `${waiting.length} ${waiting.length === 1 ? 'performance' : 'performances'} in the wings`
-    : 'The next spot could be yours.';
   // Restore the structured rows after the shared page refresh renders its plain list.
   const snapshot = JSON.stringify(waiting);
   const list = element('queue');

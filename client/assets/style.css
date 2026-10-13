@@ -1,5 +1,6 @@
 ﻿:root {
   color-scheme: light;
+  --font-family: "Fira Code", Consolas, "Courier New", monospace;
   --bubblegum: #e879a6;
   --charcoal: #282629;
   --ash-brown: #817569;
@@ -24,7 +25,7 @@ body {
   isolation: isolate;
   background: var(--ivory);
   color: var(--charcoal);
-  font-family: Consolas, "Courier New", monospace;
+  font-family: var(--font-family);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -144,7 +145,7 @@ h2 {
   border-radius: 0;
   background: var(--charcoal);
   color: var(--ivory);
-  font-family: Consolas, "Courier New", monospace;
+  font-family: var(--font-family);
   text-decoration: none;
 }
 
@@ -292,7 +293,7 @@ button {
   border-radius: 0;
   background: var(--charcoal);
   color: var(--ivory);
-  font: 500 0.875rem/1.5 Consolas, "Courier New", monospace;
+  font: 500 0.875rem/1.5 var(--font-family);
   box-shadow: none;
   cursor: pointer;
 }
@@ -565,7 +566,7 @@ canvas {
 :is(.projector-view, .audience-view) #current {
   position: relative;
   z-index: 1;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: var(--font-family);
   font-size: clamp(2.5rem, 5.5vw, 6rem);
   line-height: 1.05;
   font-weight: 800;
@@ -1154,7 +1155,7 @@ canvas {
 .host-hint { color: #655a50; font-size: 0.85rem; }
 .host-stage .host-hint { color: var(--silver); }
 #host-current { display: flex; flex-direction: column; gap: 8px; }
-#host-current > strong { font-family: 'Segoe UI', Arial, sans-serif; font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.1; overflow-wrap: anywhere; }
+#host-current > strong { font-family: var(--font-family); font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.1; overflow-wrap: anywhere; }
 #host-current > p { color: var(--bubblegum); font-size: 1.1rem; overflow-wrap: anywhere; }
 #host-next-preview { padding-top: 12px; border-top: 1px solid var(--silver); color: var(--peach); overflow-wrap: anywhere; }
 .host-action-block { display: flex; flex-direction: column; align-items: start; gap: 8px; }
@@ -1227,7 +1228,7 @@ canvas {
 
 #finale { text-align: center; }
 .finale-eyebrow { color: var(--burgundy); font-size: 0.9rem; letter-spacing: 0.15em; }
-.finale-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: clamp(2rem, 4.5vw, 5rem); line-height: 1.1; margin: 12px 0; }
+.finale-title { font-family: var(--font-family); font-size: clamp(2rem, 4.5vw, 5rem); line-height: 1.1; margin: 12px 0; }
 .finale-help { color: #655a50; font-size: 1rem; max-width: 850px; margin: 0 auto 24px; }
 .envelope-grid { display: grid; gap: 24px; }
 .podium-envelopes { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 32px 0; }
@@ -1308,7 +1309,7 @@ button.award-envelope:disabled { opacity: 0.6; color: var(--charcoal); backgroun
 .winner-spotlight[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
 .winner-spotlight > img { width: clamp(70px, 10vw, 140px); height: auto; }
 .winner-category { color: var(--bubblegum); font-size: clamp(1.5rem, 3vw, 3rem); }
-.winner-name { font-family: 'Segoe UI', Arial, sans-serif; font-size: clamp(2.5rem, 8vw, 8rem); line-height: 1.05; overflow-wrap: anywhere; max-width: 100%; animation: letter-arrive 850ms ease-out; }
+.winner-name { font-family: var(--font-family); font-size: clamp(2.5rem, 8vw, 8rem); line-height: 1.05; overflow-wrap: anywhere; max-width: 100%; animation: letter-arrive 850ms ease-out; }
 .winner-song { font-size: clamp(1rem, 2.5vw, 2.5rem); color: var(--silver); overflow-wrap: anywhere; }
 .champion-title { font-size: clamp(1rem, 2.5vw, 2.5rem); color: var(--peach); }
 .winner-reward { padding: 8px 20px; background: var(--bubblegum); color: var(--charcoal); font-size: clamp(1.1rem, 2vw, 2rem); font-weight: 700; }
@@ -1347,7 +1348,7 @@ button.award-envelope:disabled { opacity: 0.6; color: var(--charcoal); backgroun
 }
 
 /* Quiet host desk: one accent, plain surfaces, and compact controls. */
-.host-view { font-family: 'Segoe UI', Arial, sans-serif; background: #f6f5f2; }
+.host-view { font-family: var(--font-family); background: #f6f5f2; }
 .host-view .animated-gradient,
 .host-view .section::before,
 .host-view .login-form::before { display: none; }

@@ -257,9 +257,7 @@ voteButton.onclick = async () => {
 };
 
 if (view === 'projector') {
-  const url = new URL(import.meta.env.VITE_PUBLIC_URL || location.href);
-  url.search = '';
-  url.hash = '';
+  const url = new URL('https://kafeshka.cc/karaoke-ituk');
 
   const link = element('join-link') as HTMLAnchorElement;
   link.href = url.href;

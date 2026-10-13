@@ -731,7 +731,7 @@ canvas {
 }
 
 :is(.projector-view, .audience-view) #join-link {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 :is(.projector-view, .audience-view) .queue-section {
